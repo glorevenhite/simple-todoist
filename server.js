@@ -10,7 +10,9 @@ var port = process.env.PORT || 8080
 var app = express();		
 
 /******************** Configuration ******************/
-mongoose.connect('mongodb://127.0.0.1:27017/todoist');			// connect to mongdoDB database
+//mongoose.connect('mongodb://127.0.0.1:27017/todoist');			// connect to mongdoDB database
+var database = require('./config/database');
+mongoose.connect(database.url);
 
 // set the static files location
 app.use(express.static(__dirname + '/public'));	
