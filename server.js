@@ -1,28 +1,42 @@
-//setup
+//Setup ======================================================
 var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
+var mongoose = require('mongoose');					// mongoose for mongodb
+var morgan = require('morgan');						// log request to the console (express 4)
+var bodyParser = require('body-parser');			// pull information from HTML POST (express 4)
+var methodOverride = require('method-override');	// simulte DELETE and PUT (express 4)
+var port = process.env.PORT || 8080
 
-//configuration
-mongoose.connect('mongodb://127.0.0.1:27017/todoist');
+// create our app with express
+var app = express();		
 
-app.use(express.static(__dirname + '/public'));		// set the static files location
-app.use(morgan('dev'));		// log everything request to the console
-app.use(bodyParser.urlencoded({'extended' : 'true'}));
+/******************** Configuration ******************/
+mongoose.connect('mongodb://127.0.0.1:27017/todoist');			// connect to mongdoDB database
+
+// set the static files location
+app.use(express.static(__dirname + '/public'));	
+
+// log everything request to the console				
+app.use(morgan('dev'));					
+
+// parse application/x-www-form-urlencode						
+app.use(bodyParser.urlencoded({'extended' : 'true'}));		
+
+// parse application/json	
 app.use(bodyParser.json());
+
+// parse application/vnd.api+json as json
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
+
+//
 app.use(methodOverride());
 
-//model
+/*********** MODEL ************************/
 var Todo = mongoose.model('Todo', {
 	text	: String,
 	done	: Boolean
 });
 
-//routes
+/******* Routes ********************/
 app.get('/api/todos', function(req, res) {
 	Todo.find(function(err, todos){
 		if(err)
@@ -62,10 +76,11 @@ app.delete('/api/todos/:todo_id', function(req, res) {
 	});
 });
 
-//application
+/****** Application **********/
 app.get('*', function(req, res) {
+	// load the single view file (angualar will handle the page changes on the front-end)
 	res.sendfile('./public/index.html');
 });
 
-app.listen(8080);
-console.log("App listening on port 8080");
+app.listen(port);
+console.log("App listening on port " + port);
