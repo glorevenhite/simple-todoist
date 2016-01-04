@@ -32,57 +32,9 @@ app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 //
 app.use(methodOverride());
 
-/*********** MODEL ************************/
-var Todo = mongoose.model('Todo', {
-	text	: String,
-	done	: Boolean
-});
-
 /******* Routes ********************/
-app.get('/api/todos', function(req, res) {
-	Todo.find(function(err, todos){
-		if(err)
-			res.send(err);
-		res.json(todos);
-	});
-});
+require('./app/routes.js')(app);
 
-app.post('/api/todos', function(req, res) {
-	Todo.create({
-		text	: req.body.text,
-		done	: false
-	}, function(err, todo){
-		if (err) 
-			res.send(err);
-
-		Todo.find(function(err, todos) {
-			if(err)
-				res.send(err)
-			res.json(todos);
-		});
-	});
-});
-
-app.delete('/api/todos/:todo_id', function(req, res) {
-	Todo.remove({
-		_id:req.params.todo_id
-	}, function(err, todo) {
-		if(err)
-			res.send(err);
-
-		Todo.find(function(err, todos) {
-			if(err)
-				res.send(err);
-			res.json(todos);
-		});
-	});
-});
-
-/****** Application **********/
-app.get('*', function(req, res) {
-	// load the single view file (angualar will handle the page changes on the front-end)
-	res.sendfile('./public/index.html');
-});
-
+// listen 
 app.listen(port);
 console.log("App listening on port " + port);
