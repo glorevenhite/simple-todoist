@@ -12,7 +12,8 @@ var app = express();
 /******************** Configuration ******************/
 //mongoose.connect('mongodb://127.0.0.1:27017/todoist');			// connect to mongdoDB database
 var database = require('./config/database');
-mongoose.connect(database.url);
+mongoose.connect(database.url_transactions);
+//mongoose.connect(database.url_todos);
 
 // set the static files location
 app.use(express.static(__dirname + '/public'));	
@@ -37,4 +38,4 @@ require('./app/routes.js')(app);
 
 // listen 
 app.listen(port);
-console.log("App listening on port " + port);
+console.log("App listening on port: " + port);

@@ -1,0 +1,155 @@
+<html ng-app="tradeCore">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Node/Angular Todo App </title>
+
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
+
+    <!--
+    <link rel="stylesheet" href="./css/bootstrap-datetimepicker.min.css">
+	-->
+
+    <style>
+		html {overflow: scroll;}
+		body {padding-top: 50px;}
+		#trade-list {margin-bottom: 30px;}
+
+
+        .datepickerdemoBasicUsage {
+        /** Demo styles for mdCalendar. */ 
+        }
+        .datepickerdemoBasicUsage md-content {
+            padding-bottom: 200px; 
+        }
+        
+        .datepickerdemoBasicUsage .validation-messages {
+            font-size: 11px;
+            color: darkred;
+            margin: 10px 0 0 25px; 
+        }
+	</style>
+	
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script><!-- load angular -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.min.js"></script> 
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-aria.min.js"></script> 
+    
+    <!-- Angular Material Javascript now available via Google CDN; version 0.9.4 used here -->
+    <script src="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js"></script> 
+
+   
+    <!--
+    <script type="text/javascript" src="./scripts/moment.js"></script>
+    <script type="text/javascript" src="./scripts/transition.js"></script>
+    <script type="text/javascript" src="./scripts/collapse.js"></script>
+    <script type="text/javascript" src="./scripts/bootstrap-datetimepicker.min.js"></script>
+    
+
+    <script src="js/controllers/datePickerController.js"></script>
+    -->
+    <script src="./js/controllers/tradeController.js"></script>
+    <script src="./js/services/tradeService.js"></script>
+    <script src="./js/app.js"></script>
+
+   
+</head>
+<!-- SET THE CONTROLLER AND GET ALL TODOS -->
+<body ng-controller="tradeMainController">
+    <div class="container">
+    	<div class="jumbotron text-center">
+            <h1>BUY SELL</h1>
+        </div>
+        <h1>{{trades.length}}</h1>
+        
+       
+
+        <!-- FORM TO CREATE TODOS -->
+        <div id="transaction-form" class="row">
+            <div class="col-sm-12 text-center">
+                <form>
+                    <div class="form-group">
+                        <div class="row">
+                            <span class="col-md-3">
+                                <label>Ngày giao dịch:</label>
+                                <input type="date" value="{{date | date :'dd/mm/yyyy'}}" class="form-control input-lg text-center" ng-model="formData.date">
+                            </span>
+                        
+                     
+
+                        
+                            <span class="col-md-3">
+                                <label>Mã cổ phiếu </label>
+                                <input type="text" class="form-control input-lg text-center" placeholder="Mã cổ phiếu" ng-model="formData.ticker">
+                            </span>
+
+                            <span class="col-md-3">
+                                <label>Số lượng:</label>
+                                <input type="text" class="form-control input-lg text-center" placeholder="Số lượng" ng-model="formData.quantity">
+                            </span>
+
+                            <span class="col-md-3">
+                                <label>Giá </label>
+                                <input type="text" class="form-control input-lg text-center" placeholder="Giá" ng-model="formData.price">
+                            </span>
+                        </div>
+
+                        <div class="row col-md-12">
+                            <span class="col-md-3 col-md-offset-6">
+                                <label>Phí giao dịch
+                                <select type="select" class="col-md-3 form-control input-lg text-center" placeholder="Phí" ng-model="formData.fee">
+                                    <option value="0.0015">0.15%</option>
+                                    <option value="0.0020">0.20%</option>
+                                    <option value="0.0025">0.25%</option>
+                                    <option value="0.0030">0.30%</option>
+                                    <option value="0.0035">0.35%</option>
+                                    <option value="0.0040">0.40%</option>
+                                </select>
+                                </label>
+                            </span>
+
+                            <span class="col-md-3">
+                                <label for="margin-ratio">Tỷ lệ ký quỹ cổ phiếu
+                                <select id="margin-ratio" type="select" class="col-md-3 form-control input-lg text-center" placeholer="Tỷ lệ" ng-model="formData.margin">
+                                    <option value="0.0">0%</option>
+                                    <option value="0.1">10%</option>
+                                    <option value="0.2">20%</option>
+                                    <option value="0.3">30%</option>
+                                    <option value="0.4">40%</option>
+                                    <option value="0.5">50%</option>
+                                    <option value="0.6">60%</option>
+                                    <option value="0.7">70%</option>
+                                    <option value="0.8">80%</option>
+                                </select>    
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+
+        
+
+                    <!-- createToDo() WILL CREATE NEW TODOS -->
+                    <button type="submit" class="btn btn-success btn-lg" ng-click="longPosition()">MUA</button>
+                    <button type="submit" class="btn btn-danger btn-lg" ng-click="shortPosition()">BÁN</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="trade-list" class="row" ng-repeat="trade in trades">
+            <div class="col-md-10">
+                <input type="checkbox" ng-click="deleteTrade(trade._id)">  {{trade.ticker}} {{trade.quantity}}
+            </div>
+        </div>
+
+        <!-- Angular Material Dependencies -->
+    
+     <script>
+ 
+
+    </script>
+    </div>
+</body>
+</html>    
